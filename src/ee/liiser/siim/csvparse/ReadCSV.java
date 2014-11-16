@@ -1,9 +1,11 @@
 package ee.liiser.siim.csvparse;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -16,22 +18,37 @@ public class ReadCSV {
 	List<Activity> activities = new ArrayList<Activity>();
 	DateTimeFormatter format = DateTimeFormatter
 			.ofPattern("yyyy/MM/dd HH:mm:ss.SSS");
-	String csvFile = "financial_log.csv";
-	String cvsSplitBy = ",";
+	private static final String csvFile = "financial_log.csv";
+	private static final String outputFile = "output.txt";
+	private static final String cvsSplitBy = ",";
+	
+	static PrintStream out;
 
 	public static void main(String[] args) {
 
-		// Measuring time taken
-		Instant startTime = Instant.now();
-		ReadCSV obj = new ReadCSV();
-		obj.run();
-		System.out.println("Run time: "
-				+ toNiceTime(Duration.between(startTime, Instant.now())));
+		try {
+			out = new PrintStream(new File(outputFile));
+			
+			// Measuring time taken
+			Instant startTime = Instant.now();
+			ReadCSV obj = new ReadCSV();
+			obj.run();
+			out.println("Run time: "
+					+ toNiceTime(Duration.between(startTime, Instant.now())));
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} finally{
+			if(out != null){
+				out.close();
+			}
+		}
 
 	}
 
 	public void run() {
 
+		
 		BufferedReader br = null;
 		String line = "";
 
@@ -70,7 +87,7 @@ public class ReadCSV {
 			for (Activity a : activities) {
 				// Here I just print out all the differences, you probably want
 				// to do something else with them
-				System.out
+				out
 						.println("For ID: " + a.getID()
 								+ ", the process time is "
 								+ toNiceTime(a.difference()));
@@ -91,7 +108,7 @@ public class ReadCSV {
 			}
 		}
 
-		System.out.println("Done");
+		out.println("Done");
 	}
 
 	// Just a method to make the output of duration nicer to read.
