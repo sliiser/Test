@@ -2,6 +2,7 @@ package ee.liiser.siim.csvparse;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 public class Activity {
 	private String ID;
